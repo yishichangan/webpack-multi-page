@@ -4,3 +4,4 @@
 # 使用
 *  npm install
 *  npm start 进入开发
+*  npm run build 打包发布
