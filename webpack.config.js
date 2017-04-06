@@ -9,16 +9,16 @@ var SRC_PATH = path.resolve(__dirname, 'src');
 var BUILD_PATH = path.resolve(__dirname, 'dist');
 
 //模块存在apps中便于查询
-var files = glob.sync('./src/**/*.html');
-var entries = {},
-  plugins = [];
+var files = glob.sync('./src/pages/**/*.hbs');
+var entries = {};
+var plugins = [];
 
 files.forEach(function(f) {
-  var name = /.*\/(.*?\/.*)\.html/.exec(f)[1]; //得到home/index这样的文件名
+  var name = /.*\/(.*?\/.*?\/.*)\.hbs/.exec(f)[1]; //得到home/index这样的文件名
   if (!name) return;
   
-  //glob是通过html文件查到的filename
-  var jsname = f.replace(/\.html$/, '.js');
+  //glob是通过hbs文件查到的filename
+  var jsname = f.replace(/\.hbs$/, '.js');
   var jsfile = glob.sync(jsname);
   if(jsfile && jsfile.length){
     entries[name] = jsname;
@@ -27,7 +27,8 @@ files.forEach(function(f) {
     filename: path.resolve(BUILD_PATH, name + '.html'),
     //加上chunks之后每个页面会引入自己的chunks
     chunks: [name],
-    template: path.resolve(SRC_PATH, name + '.html'),
+    title: name,
+    template: path.resolve(SRC_PATH, name + '.hbs'),
     inject: true
   });
   plugins.push(plug);
@@ -56,13 +57,23 @@ config = {
       query: {
         presets: ['es2015'] //转换 es6编码为 es5
       }
-    }, ]
+    },
+    {
+      test: /\.hbs$/,
+      loader: "handlebars-loader",
+      query: {
+        partialDirs: [
+          path.join(SRC_PATH, 'components', 'header'),
+          path.join(SRC_PATH, 'components', 'footer'),
+        ]
+      }
+    }]
   },
   plugins: plugins.concat([
     new Ex('[name].css')
   ]),
   devServer: {
-    contentBase: './dist',
+    contentBase: './dist/pages',
     hot: true
   }
 }
