@@ -9,16 +9,16 @@ var SRC_PATH = path.resolve(__dirname, 'src');
 var BUILD_PATH = path.resolve(__dirname, 'dist');
 
 //模块存在apps中便于查询
-var files = glob.sync('./src/pages/**/*.hbs');
+var files = glob.sync('./src/pages/**/*.html');
 var entries = {};
 var plugins = [];
 
 files.forEach(function(f) {
-  var name = /.*\/(.*?\/.*?\/.*)\.hbs/.exec(f)[1]; //得到home/index这样的文件名
+  var name = /.*\/(.*?\/.*?\/.*)\.html/.exec(f)[1]; //得到home/index这样的文件名
   if (!name) return;
   
-  //glob是通过hbs文件查到的filename
-  var jsname = f.replace(/\.hbs$/, '.js');
+  //glob是通过html文件查到的filename
+  var jsname = f.replace(/\.html$/, '.js');
   var jsfile = glob.sync(jsname);
   if(jsfile && jsfile.length){
     entries[name] = jsname;
@@ -28,7 +28,7 @@ files.forEach(function(f) {
     //加上chunks之后每个页面会引入自己的chunks
     chunks: [name],
     title: name,
-    template: path.resolve(SRC_PATH, name + '.hbs'),
+    template: path.resolve(SRC_PATH, name + '.html'),
     inject: true
   });
   plugins.push(plug);
@@ -59,7 +59,7 @@ config = {
       }
     },
     {
-      test: /\.hbs$/,
+      test: /\.html$/,
       loader: "handlebars-loader",
       query: {
         partialDirs: [
