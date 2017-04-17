@@ -24,10 +24,10 @@ files.forEach(function(f) {
     entries[name] = jsname;
   }
   var plug = new HtmlWebpackPlugin({
+    favicon:'./src/images/favicon.ico', //favicon路径
     filename: path.resolve(BUILD_PATH, name + '.html'),
     //加上chunks之后每个页面会引入自己的chunks
-    chunks: [name],
-    title: name,
+    chunks: ['common/common','common/vendor', name],
     template: path.resolve(SRC_PATH, name + '.html'),
     inject: true
   });
@@ -35,21 +35,26 @@ files.forEach(function(f) {
 });
 
 config = {
-  entry: Object.assign({}, entries),
+  entry: Object.assign(entries,{
+    'common/vendor': ['./src/common/common'],
+  }),
   output: {
     path: BUILD_PATH,
-    filename: '[name].js'
+    filename: '[name].js',
+    publicPath: "/dist",
   },
   module: {
-    loaders: [{
-      test: /\.css$/,
-      loader: Ex.extract(['css-loader'])
-    }, {
-      test: /.scss$/,
-      loader: Ex.extract(["style-loader", "css-loader!sass-loader"])
-    }, { //对大于6000字节 的图片采取base64处理
-      test: /\.(png|jpg|gif)$/,
-      loader: 'url?limit=6000'
+    loaders: [
+    {
+      test: /\.(s)?css$/,
+      use: Ex.extract({
+        fallback: 'style-loader',
+        use: ['css-loader', 'sass-loader']
+      })
+    },
+    {
+      test: /\.(png|jpg|gif|jpeg|ico)$/,
+      loader: 'url-loader?limit=1000&name=[path][name].[ext]'
     }, {
       test: /\.js$/, //js 加载器
       loader: 'babel-loader',
@@ -60,21 +65,23 @@ config = {
     },
     {
       test: /\.html$/,
-      loader: "handlebars-loader",
-      query: {
-        partialDirs: [
-          path.join(SRC_PATH, 'components', 'header'),
-          path.join(SRC_PATH, 'components', 'footer'),
-        ]
-      }
+      loader: "html-withimg-loader"
     }]
   },
   plugins: plugins.concat([
-    new Ex('[name].css')
+    new Ex('[name].css'),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'common/common',
+      chunks: Object.keys(entries)
+    }),
   ]),
   devServer: {
+    port: 3001,
     contentBase: './dist/pages',
-    hot: true
+    historyApiFallback: false,
+    open: true, // 打开地址
+    compress: true, // 开启gzip压缩
+    watchContentBase : true
   }
 }
 

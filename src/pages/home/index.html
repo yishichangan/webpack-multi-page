@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{htmlWebpackPlugin.options.title}}</title>
+  <title>首页</title>
 </head>
 <body>
   <div class="home">
-    {{> header.html}}
-  <h2>This is {{name}} page.</h2>
+    #include("../../components/header.html")
+    <div>内容区域</div>
+    #include("../../components/footer.html")
+  </div>
 </body>
 </html>
