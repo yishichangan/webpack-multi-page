@@ -4,7 +4,7 @@
 # 使用
 *  npm install
 *  npm run build 打包发布
-*  npm start 启动服务 localhost:30001
+*  npm start 启动服务 localhost:3001
 *  npm run dev 开发模式监听修改
 
 # 说明
