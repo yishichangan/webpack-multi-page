@@ -24,10 +24,10 @@ files.forEach(function(f) {
     entries[name] = jsname;
   }
   var plug = new HtmlWebpackPlugin({
-    favicon:'./src/images/favicon.ico', //favicon路径
+    favicon: path.resolve(SRC_PATH,'assets/images/favicon.ico'), //favicon路径
     filename: path.resolve(BUILD_PATH, name + '.html'),
     //加上chunks之后每个页面会引入自己的chunks
-    chunks: ['common/common','common/vendor', name],
+    chunks: ['common','global', name],
     template: path.resolve(SRC_PATH, name + '.html'),
     inject: true
   });
@@ -36,7 +36,7 @@ files.forEach(function(f) {
 
 config = {
   entry: Object.assign(entries,{
-    'common/vendor': ['./src/common/common'],
+    'global': ['./src/assets/common/global'],
   }),
   output: {
     path: BUILD_PATH,
@@ -65,13 +65,13 @@ config = {
     },
     {
       test: /\.html$/,
-      loader: "html-withimg-loader"
+      loader: "html-withimg-loader?min=false",
     }]
   },
   plugins: plugins.concat([
     new Ex('[name].css'),
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'common/common',
+      name: 'common',
       chunks: Object.keys(entries)
     }),
   ]),
